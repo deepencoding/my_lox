@@ -4,7 +4,7 @@ use std::io;
 use std::io::Write;
 
 use super::token::Token;
-use super::scanner;
+use super::scanner::Scanner;
 
 pub struct Lox {
     had_err: bool,
@@ -20,7 +20,7 @@ impl Lox {
     pub fn start(&mut self) {
         let args: Vec<String> = env::args().collect();
         if args.len() > 2 {
-            println!("Usage jlox [script]");
+            println!("[Usage]: jlox [script]");
             std::process::exit(64);
         } else if args.len() == 2 {
             self.run_file(&args[1]);
@@ -29,9 +29,9 @@ impl Lox {
         }
     }
 
-    fn run_file(&self, path: &str) {
+    fn run_file(&mut self, path: &str) {
         let file_path = std::path::Path::new(&path);
-        let input = fs::read_to_string(&file_path).unwrap();
+        let input = fs::read_to_string(&file_path).expect("[Error]: Cannot read file.");
         self.run(&input);
         if self.had_err { std::process::exit(65) }
     }
@@ -56,21 +56,21 @@ impl Lox {
         Ok(())
     }
 
-    fn run(&self, input: &str) {
-        let scanner: Scanner = Scanner::new(input);
-        let tokens: Vec<Token> = scanner.scanTokens();
+    fn run(&mut self, input: &str) {
+        let mut scanner: Scanner = Scanner::new(input);
+        let tokens: Vec<Token> = scanner.scan_tokens(self);
 
-        for &tok in tokens {
+        for tok in tokens {
             println!("{:?}", tok);
         }
     }
 
-    fn error(&mut self, line: usize, msg: &str) {
-        self.report(&line, "", msg);
+    pub fn error(&mut self, line: usize, col: usize, msg: &str) {
+        self.report(line, col, "", msg);
     }
 
-    fn report(&mut self, line: &usize, poc: &str, msg: &str) {
-        println!("[line {}] Error{}: {}", line, poc, msg);
+    fn report(&mut self, line: usize, col: usize, poc: &str, msg: &str) {
+        println!("[line {}: col {}] Error{}: {}", line, col, poc, msg);
         self.had_err = true;
     }
 }
