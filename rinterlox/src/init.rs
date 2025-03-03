@@ -3,8 +3,8 @@ use std::fs;
 use std::io;
 use std::io::Write;
 
-use super::token::Token;
-use super::scanner::Scanner;
+use super::scanner::token::Token;
+use super::scanner::scanner::Scanner;
 
 pub struct Lox {
     had_err: bool,

@@ -1,6 +1,6 @@
 use std::collections::HashMap;
 
-use super::init::Lox;
+use crate::init::Lox;
 use super::literals::Literal;
 use super::token::Token;
 use super::token_type::TokenType;
@@ -148,18 +148,18 @@ impl Scanner {
 
     fn match_char(&mut self, expected: char) -> bool {
         if self.is_at_end() { return false; }
-        if self.source.chars().nth(self.current).unwrap() != expected { return false; }
+        if self.source.as_bytes()[self.current] as char != expected { return false; }
 
         self.advance();
         true
     }
 
     fn peek(&self) -> char {
-        if self.is_at_end() { return '\0' } else { self.source.chars().nth(self.current).unwrap() }
+        if self.is_at_end() { return '\0' } else { self.source.as_bytes()[self.current] as char }
     }
 
     fn peek_next(&self) -> char {
-        if self.current+1 >= self.source.len() { '\0' } else { self.source.chars().nth(self.current+1).unwrap() }
+        if self.current+1 >= self.source.len() { '\0' } else { self.source.as_bytes()[self.current+1] as char }
     }
 
     fn number(&mut self) {
@@ -175,8 +175,9 @@ impl Scanner {
     }
 
     fn advance(&mut self) -> char {
+        let c = self.source.as_bytes()[self.current] as char;
         self.current += 1;
-        self.source.chars().nth(self.current-1).unwrap()
+        c
     }
 
     fn add_token(&mut self, token_type: TokenType) {
