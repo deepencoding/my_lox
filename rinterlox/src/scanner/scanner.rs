@@ -1,9 +1,9 @@
 use std::collections::HashMap;
 
 use crate::init::Lox;
-use super::literals::Literal;
 use super::token::Token;
 use super::token_type::TokenType;
+use crate::expr::AstLiteral;
 
 /*
 * start: field points to the first character in the lexeme
@@ -143,7 +143,7 @@ impl Scanner {
 
         self.advance();
         let text = &self.source[self.start+1..self.current-1];
-        self.add_token_w_lit(TokenType::String, Some(Literal::String(text.to_owned())));
+        self.add_token_w_lit(TokenType::String, Some(AstLiteral::String(text.to_owned())));
     }
 
     fn match_char(&mut self, expected: char) -> bool {
@@ -171,7 +171,7 @@ impl Scanner {
         }
 
         let text = &self.source[self.start..self.current].parse::<f64>().unwrap();
-        self.add_token_w_lit(TokenType::Number, Some(Literal::Number(text.to_owned())));
+        self.add_token_w_lit(TokenType::Number, Some(AstLiteral::Number(text.to_owned())));
     }
 
     fn advance(&mut self) -> char {
@@ -184,7 +184,7 @@ impl Scanner {
         self.add_token_w_lit(token_type, None);
     }
 
-    fn add_token_w_lit(&mut self, token_type: TokenType, literal: Option<Literal>) {
+    fn add_token_w_lit(&mut self, token_type: TokenType, literal: Option<AstLiteral>) {
         let lexeme = &self.source[self.start..self.current];
         self.tokens.push(Token::new(token_type, lexeme, literal, self.line, self.col));
     }

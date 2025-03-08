@@ -1,6 +1,6 @@
 pub mod init;
 pub mod scanner;
-pub mod tools;
+pub mod expr;
 
 use init::Lox;
 
